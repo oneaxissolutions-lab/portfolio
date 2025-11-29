@@ -3,7 +3,6 @@ import { Home, Briefcase, Code, Mail, Menu, X, Rocket, Cpu, Layers, Zap, Cloud, 
 import Hyperspeed from './Hyperspeed.jsx';
 
 // --- 🖼️ IMAGE IMPORTS ---
-// This uses the correct path './assets/' as requested.
 import image1 from './assets/image1.jpeg'; 
 import image2 from './assets/image2.jpeg'; 
 import image3 from './assets/image3.jpeg'; 
@@ -27,7 +26,8 @@ const portfolioData = {
 
 // --- Custom Components ---
 
-const Header = ({ scrollToSection, activeSection }) => {
+// --- UPDATED Header Component for Slide-in Mobile Menu ---
+const Header = ({ scrollToSection, activeSection, isMenuOpen, setIsMenuOpen }) => {
     const navItems = [
         { name: 'Home', id: 'home' },
         { name: 'Interiors', id: 'interiors' },
@@ -35,65 +35,106 @@ const Header = ({ scrollToSection, activeSection }) => {
         { name: 'Projects', id: 'projects' },
         { name: 'Contact', id: 'contact' },
     ];
+    
+    const handleScrollAndClose = (id) => {
+        scrollToSection(id);
+        setIsMenuOpen(false); // Close menu after selection
+    };
+
     return (
-        <header className="fixed top-4 left-1/2 transform -translate-x-1/2 max-w-4xl w-[95%] z-50 backdrop-blur-xl bg-white/90 rounded-full shadow-2xl ring-1 ring-gray-100 hidden md:block header-fade-lift-animated">
-            <div className="mx-auto px-6">
-                <div className="flex justify-between items-center h-16">
-                    <div className="flex-shrink-0 text-xl font-extrabold cursor-pointer" onClick={() => scrollToSection('home')}>
+        <>
+            {/* Main Header Bar (Floating) - Fixed position ensures it stays on top */}
+            <header className="fixed top-4 left-1/2 transform -translate-x-1/2 max-w-4xl w-[95%] z-50 backdrop-blur-xl bg-white/90 rounded-full shadow-2xl ring-1 ring-gray-100 header-fade-lift-animated">
+                <div className="mx-auto px-6">
+                    <div className="flex justify-between items-center h-16">
+                        {/* Logo */}
+                        <div className="flex-shrink-0 text-xl font-extrabold cursor-pointer" onClick={() => handleScrollAndClose('home')}>
+                            <span className="text-gray-900">One </span>
+                            <span className="text-transparent bg-clip-text font-extrabold" style={{ backgroundImage: 'linear-gradient(90deg, #ffb6c1, #a855f7)' }}>Axsis</span>
+                        </div>
+
+                        {/* Desktop Navigation (Visible on md and up) */}
+                        <nav className="hidden md:flex space-x-6 lg:space-x-8">
+                            {navItems.map(item => (
+                                <a key={item.id} href={`#${item.id}`} onClick={(e) => { e.preventDefault(); handleScrollAndClose(item.id); }} className={`relative pb-1 group transition-all duration-300 font-medium tracking-wide ${activeSection === item.id ? 'text-gray-900 font-bold' : 'text-gray-700 hover:text-gray-900'}`}>
+                                    {item.name}
+                                    <span className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ease-in-out bg-cyan-600 ${activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                                </a>
+                            ))}
+                        </nav>
+
+                        {/* Mobile Menu Button (Visible only on small screens) */}
+                        <button 
+                            className="md:hidden p-2 rounded-full text-gray-700 hover:bg-gray-100 transition"
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            aria-label="Toggle Menu"
+                        >
+                            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            {/* Mobile Menu Backdrop (Darkens the background) */}
+            <div 
+                className={`fixed inset-0 z-40 bg-black/40 md:hidden transition-opacity duration-300 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                onClick={() => setIsMenuOpen(false)} // Click outside to close
+            ></div>
+
+            {/* Mobile Menu Drawer (Slides in from the right) */}
+            <div className={`
+                fixed top-0 right-0 h-screen w-3/4 max-w-sm // w-3/4 for screen space, max-w-sm for large phones/tablets
+                bg-white z-50 shadow-2xl 
+                transform transition-transform duration-300 ease-in-out
+                md:hidden 
+                ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} // Slide in/out
+            `}>
+                {/* Header inside the drawer */}
+                <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                     {/* Logo/Title inside menu */}
+                     <div className="text-xl font-extrabold">
                         <span className="text-gray-900">One </span>
                         <span className="text-transparent bg-clip-text font-extrabold" style={{ backgroundImage: 'linear-gradient(90deg, #ffb6c1, #a855f7)' }}>Axsis</span>
                     </div>
-                    <nav className="flex space-x-6 lg:space-x-8">
-                        {navItems.map(item => (
-                            <a key={item.id} href={`#${item.id}`} onClick={(e) => { e.preventDefault(); scrollToSection(item.id); }} className={`relative pb-1 group transition-all duration-300 font-medium tracking-wide ${activeSection === item.id ? 'text-gray-900 font-bold' : 'text-gray-700 hover:text-gray-900'}`}>
-                                {item.name}
-                                <span className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ease-in-out bg-cyan-600 ${activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                            </a>
-                        ))}
-                    </nav>
+                    <button 
+                        className="p-2 rounded-full text-gray-700 hover:bg-gray-100 transition"
+                        onClick={() => setIsMenuOpen(false)}
+                        aria-label="Close Menu"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
                 </div>
-            </div>
-        </header>
-    );
-};
 
-const MobileNavBar = ({ scrollToSection, activeSection }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const navItems = [
-        { name: 'Home', id: 'home', icon: Home },
-        { name: 'Interiors', id: 'interiors', icon: Layout },
-        { name: 'Services', id: 'services', icon: Cloud }, 
-        { name: 'Projects', id: 'projects', icon: Rocket },
-        { name: 'Contact', id: 'contact', icon: Mail },
-    ];
-    const handleClick = (id) => { setIsOpen(false); scrollToSection(id); };
-    return (
-        <div className="md:hidden">
-            {/* Overlay - Z-index 50 is critical */}
-            {isOpen && <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[50]" onClick={() => setIsOpen(false)}></div>}
-            
-            {/* Button container - Fixed to the center bottom, Z-index 60 */}
-            <div className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center pb-4 pt-2">
-                <button onClick={() => setIsOpen(!isOpen)} className="w-14 h-14 rounded-full bg-cyan-600 shadow-2xl shadow-cyan-500/50 flex items-center justify-center text-white transform transition-all duration-300 hover:scale-110 ring-4 ring-white">
-                    {isOpen ? <X className="w-6 h-6 transform rotate-90" /> : <Menu className="w-6 h-6" />}
-                </button>
-            </div>
-
-            {/* Menu container - Fixed and positioned relative to the viewport, Z-index 55 */}
-            <div className={`fixed bottom-[75px] right-4 p-4 bg-white rounded-xl shadow-2xl ring-1 ring-gray-100 z-[55] transition-all duration-300 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95 pointer-events-none'}`}>
-                <nav className="flex flex-col space-y-3">
+                {/* Navigation Links */}
+                <nav className="flex flex-col items-start p-6 space-y-4 text-lg">
                     {navItems.map((item, index) => (
-                        <button key={item.id} onClick={() => handleClick(item.id)} 
-                                className={`flex items-center space-x-3 p-2 rounded-lg transition duration-200 menu-item-animated ${activeSection === item.id ? 'bg-cyan-100 text-cyan-700 font-semibold' : 'text-gray-900 hover:bg-gray-50'}`}
-                                style={{ animationDelay: `${isOpen ? index * 0.1 : 0}s` }}>
-                            <item.icon className="w-5 h-5" /><span>{item.name}</span>
+                        <button 
+                            key={item.id}
+                            onClick={() => handleScrollAndClose(item.id)}
+                            className={`w-full text-left py-2 px-4 rounded-lg transition-colors duration-200 menu-item-animated ${activeSection === item.id ? 'bg-pink-50 text-pink-600 font-bold' : 'text-gray-800 hover:bg-gray-50'}`}
+                            style={{ animationDelay: `${index * 0.05}s` }}
+                        >
+                            {item.name}
                         </button>
                     ))}
+                    
+                    {/* Contact Button */}
+                    <a 
+                        href={`https://wa.me/${portfolioData.whatsappNumber}?text=${encodeURIComponent(portfolioData.whatsappMessage)}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        onClick={() => setIsMenuOpen(false)}
+                        className="mt-6 w-full text-center px-6 py-2 bg-pink-500 text-white text-base font-semibold rounded-full shadow-lg hover:bg-pink-600 transition"
+                    >
+                        Chat on WhatsApp
+                    </a>
                 </nav>
             </div>
-        </div>
+        </>
     );
 };
+// ----------------------------------------------------------------------
+
 
 const HeroSection = ({ sectionRef, scrollToSection }) => {
     return (
@@ -397,6 +438,7 @@ const MetricsBar = () => {
 // --- Main App Component ---
 const App = () => {
     const [activeSection, setActiveSection] = useState('home');
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
     const sectionRefs = useRef({});
 
     // Set a CSS variable for the viewport height to fix iOS/Android address bar issues
@@ -409,6 +451,18 @@ const App = () => {
         window.addEventListener('resize', setVh);
         return () => window.removeEventListener('resize', setVh);
     }, []);
+
+    // Effect to prevent scrolling when mobile menu is open
+    useEffect(() => {
+        if (isMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [isMenuOpen]);
 
     useEffect(() => {
         const observerOptions = { root: null, rootMargin: '0px', threshold: 0.3 };
@@ -430,8 +484,13 @@ const App = () => {
     return (
         <div className="min-h-screen bg-white text-gray-900 font-sans antialiased">
             
-            <Header scrollToSection={scrollToSection} activeSection={activeSection} />
-            <MobileNavBar scrollToSection={scrollToSection} activeSection={activeSection} />
+            {/* Pass the menu state and setter to Header */}
+            <Header 
+                scrollToSection={scrollToSection} 
+                activeSection={activeSection} 
+                isMenuOpen={isMenuOpen} 
+                setIsMenuOpen={setIsMenuOpen}
+            />
 
             <main className="relative z-10">
                 
