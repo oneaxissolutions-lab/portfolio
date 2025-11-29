@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Home, Briefcase, Code, Mail, Menu, X, Rocket, Cpu, Layers, Zap, Cloud, Globe, Layout, Smartphone, PenTool, Users, Award, MessageCircle } from 'lucide-react';
-// Assuming Hyperspeed.jsx exists in the same directory or is imported correctly
 import Hyperspeed from './Hyperspeed.jsx';
 
 // --- 🖼️ IMAGE IMPORTS ---
-// IMPORTANT: Replace these with actual image imports or mock paths in your environment
+// This uses the correct path './assets/' as requested.
 import image1 from './assets/image1.jpeg'; 
-import image2 from './assets/image2.jpeg';
-import image3 from './assets/image3.jpeg';
-import image4 from './assets/image4.jpeg';
-import image5 from './assets/image5.jpeg';
+import image2 from './assets/image2.jpeg'; 
+import image3 from './assets/image3.jpeg'; 
+import image4 from './assets/image4.jpeg'; 
+import image5 from './assets/image5.jpeg'; 
 // ----------------------------------------------------------------------
 
 // --- Configuration Data ---
@@ -69,14 +68,19 @@ const MobileNavBar = ({ scrollToSection, activeSection }) => {
     ];
     const handleClick = (id) => { setIsOpen(false); scrollToSection(id); };
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
-            {isOpen && <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsOpen(false)}></div>}
-            <div className="relative flex justify-center pb-2 pt-2">
+        <div className="md:hidden">
+            {/* Overlay - Z-index 50 is critical */}
+            {isOpen && <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[50]" onClick={() => setIsOpen(false)}></div>}
+            
+            {/* Button container - Fixed to the center bottom, Z-index 60 */}
+            <div className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center pb-4 pt-2">
                 <button onClick={() => setIsOpen(!isOpen)} className="w-14 h-14 rounded-full bg-cyan-600 shadow-2xl shadow-cyan-500/50 flex items-center justify-center text-white transform transition-all duration-300 hover:scale-110 ring-4 ring-white">
                     {isOpen ? <X className="w-6 h-6 transform rotate-90" /> : <Menu className="w-6 h-6" />}
                 </button>
             </div>
-            <div className={`absolute bottom-20 right-4 p-4 bg-white rounded-xl shadow-2xl ring-1 ring-gray-100 transition-all duration-300 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95 pointer-events-none'}`}>
+
+            {/* Menu container - Fixed and positioned relative to the viewport, Z-index 55 */}
+            <div className={`fixed bottom-[75px] right-4 p-4 bg-white rounded-xl shadow-2xl ring-1 ring-gray-100 z-[55] transition-all duration-300 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95 pointer-events-none'}`}>
                 <nav className="flex flex-col space-y-3">
                     {navItems.map((item, index) => (
                         <button key={item.id} onClick={() => handleClick(item.id)} 
@@ -91,26 +95,21 @@ const MobileNavBar = ({ scrollToSection, activeSection }) => {
     );
 };
 
-// 🛑 MODIFIED: HeroSection with White Background 
 const HeroSection = ({ sectionRef, scrollToSection }) => {
     return (
         <section 
             id="home" 
             ref={sectionRef} 
-            // CRITICAL: sticky top-0 and h-screen make this the stable background layer
-            // BACKGROUND IS WHITE
-            className="w-full h-screen flex items-center justify-center p-4 sm:p-8 relative bg-white sticky top-0" 
+            className="w-full vh-fix flex items-center justify-center p-4 sm:p-8 relative bg-white sticky top-0" 
             style={{ zIndex: 5 }}
         >
             
            <Hyperspeed />
             
             <div className="text-center max-w-5xl mx-auto relative z-10">
-                {/* Text color changed to gray-900 for visibility on white background */}
                 <h1 className={`text-6xl sm:text-7xl md:text-8xl font-extrabold leading-none tracking-tight mb-4 header-animated text-gray-900`} style={{ animationDelay: '0.1s' }}>
                     Transform Your <span className="block text-7xl sm:text-8xl md:text-9xl font-extrabold text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #ffb6c1, #a855f7)' }}>Vision</span>
                 </h1>
-                {/* Text color changed to gray-700 for visibility on white background */}
                 <p className={`text-xl sm:text-2xl text-gray-700 mt-6 max-w-3xl mx-auto summary-animated`} style={{ animationDelay: '0.5s' }}>We craft cutting-edge solutions that accelerate your business forward.</p>
                 
                 <a 
@@ -119,30 +118,67 @@ const HeroSection = ({ sectionRef, scrollToSection }) => {
                     className={`inline-flex items-center mt-10 px-8 py-3 bg-cyan-600 text-white text-lg font-semibold rounded-full shadow-2xl shadow-cyan-500/50`} 
                     style={{ animationDelay: '0.8s' }}
                 >
-                    Let's Talk! <MessageCircle className="w-5 h-5 ml-3" />
+                    Let's Talk! <MessageCircle className="w-6 h-6 ml-3" />
                 </a>
             </div>
         </section>
     );
 };
 
-const DesignCard = ({ title, description, imgSrc, index, isVisible }) => (
-    <div className={`group relative overflow-hidden rounded-2xl shadow-xl cursor-pointer ${isVisible ? 'card-animated' : ''}`}
-        style={{ animationDelay: isVisible ? `${index * 0.15}s` : '0s', height: '300px' }}>
-        <img 
-            src={imgSrc} 
-            alt={title} 
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-            onError={(e) => {e.target.onerror = null; e.target.src="https://placehold.co/600x400/e0f7fa/00bcd4?text=Design+Render"}}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-100"></div>
-        <div className="absolute inset-0 ring-4 ring-transparent transition-all duration-300 group-hover:ring-pink-200"></div> 
-        <div className="absolute bottom-0 left-0 p-6 translate-y-2 transition-transform duration-300 group-hover:translate-y-0">
-            <h3 className="text-xl font-bold text-white mb-1">{title}</h3>
-            <p className="text-gray-200 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">{description}</p>
+// --- Interior Design Card (Tap-responsive) ---
+const DesignCard = ({ title, description, imgSrc, index, isVisible }) => {
+    const [isTapped, setIsTapped] = useState(false);
+
+    const handleTap = () => {
+        setIsTapped(prevTapped => {
+            const newState = !prevTapped;
+            
+            if (newState) {
+                // Auto-hide after 4 seconds if tapped
+                setTimeout(() => {
+                    setIsTapped(currentTapped => {
+                        if (currentTapped === true) {
+                            return false;
+                        }
+                        return currentTapped;
+                    });
+                }, 4000); 
+            }
+            return newState;
+        });
+    };
+
+    const textVisibilityClass = isTapped ? 
+        'opacity-100 translate-y-0' : 
+        'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0';
+    
+    const activeRingClass = isTapped ? 
+        'ring-pink-200' : 
+        'ring-transparent group-hover:ring-pink-200';
+
+    return (
+        <div 
+            className={`group relative overflow-hidden rounded-2xl shadow-xl cursor-pointer ${isVisible ? 'card-animated' : ''}`}
+            onClick={handleTap} 
+            style={{ animationDelay: isVisible ? `${index * 0.15}s` : '0s', height: '300px' }}
+        >
+            <img 
+                src={imgSrc} 
+                alt={title} 
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                onError={(e) => {e.target.onerror = null; e.target.src="https://placehold.co/600x400/e0f7fa/00bcd4?text=Design+Render"}}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-100"></div>
+            
+            <div className={`absolute inset-0 ring-4 transition-all duration-300 ${activeRingClass}`}></div> 
+            
+            <div className={`absolute bottom-0 left-0 p-6 transition-transform duration-300 delay-100 ${textVisibilityClass}`}>
+                <h3 className="text-xl font-bold text-white mb-1">{title}</h3>
+                <p className="text-gray-200 text-sm transition-opacity duration-300">{description}</p>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const InteriorDesign = ({ sectionRef }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -170,6 +206,7 @@ const InteriorDesign = ({ sectionRef }) => {
     }, [sectionRef]);
 
     const designs = [
+        // Using locally imported image variables
         { title: "Co-working Office Design (Front)", description: "A collaborative, modern office area with wood accents and vertical greenery for a fresh environment.", img: image1 },
         { title: "Sleek Executive Cabin", description: "A sophisticated executive workspace featuring dark ceilings, glass partitions, and integrated wooden shelving.", img: image4 },
         { title: "Compact Gourmet Kitchen", description: "Modern modular kitchen with patterned backsplash, integrated lighting, and black stone countertops.", img: image2 },
@@ -263,6 +300,48 @@ const ServicesSection = ({ sectionRef }) => {
     );
 };
 
+
+// --- COMPONENT FOR METRICS CARD (Tap-responsive) ---
+const MetricCard = ({ metric, index, isVisible }) => {
+    const [isTapped, setIsTapped] = useState(false);
+
+    const handleTap = () => {
+        setIsTapped(true);
+        // Remove glow after 3 seconds
+        setTimeout(() => setIsTapped(false), 3000); 
+    };
+    
+    // Apply temporary glow/scale on tap
+    const glowClass = isTapped ? 'shadow-2xl shadow-pink-500/30 border-pink-300 scale-[1.05]' : '';
+
+    return (
+        <div 
+            key={index} 
+            onClick={handleTap} 
+            className={`
+                bg-gray-50 p-8 rounded-2xl border-2 border-gray-200 
+                shadow-xl shadow-gray-200/50 
+                flex flex-col items-center text-center 
+                transition duration-500 transform cursor-pointer
+                hover:scale-[1.05] hover:border-pink-300
+                hover:shadow-2xl hover:shadow-pink-500/30 
+                ${isVisible ? 'card-animated' : ''}
+                ${glowClass} 
+            `} 
+            style={{ animationDelay: isVisible ? `${index * 0.15}s` : '0s' }}
+        >
+            <div className={`p-4 rounded-full mb-4 bg-gray-200 ${metric.color} metrics-icon-pulse`}> 
+                <metric.icon className="w-8 h-8" />
+            </div>
+            <h3 className={`text-5xl font-extrabold mb-1 text-gray-900 ${isVisible ? 'text-animated' : ''}`}>{metric.count}</h3> 
+            <p className={`text-md font-medium text-gray-600 mt-2 ${isVisible ? 'summary-animated' : ''}`} style={{ animationDelay: isVisible ? `${index * 0.15 + 0.2}s` : '0s' }}>{metric.label}</p>
+            <div className={`w-1/3 h-1 mt-4 rounded-full ${metric.lineColor} ${isVisible ? 'animate-line-flow' : ''}`} style={{ animationDelay: isVisible ? `${index * 0.15 + 0.5}s` : '0s' }}></div>
+        </div>
+    );
+};
+// ----------------------------------------------------------------------
+
+
 const MetricsBar = () => {
     const [isVisible, setIsVisible] = useState(false);
     const metricsBarRef = useRef(null);
@@ -275,7 +354,8 @@ const MetricsBar = () => {
                     observer.disconnect(); 
                 }
             },
-            { threshold: 0.4 }
+            // Using higher threshold and rootMargin for reliable mobile trigger
+            { threshold: 0.5, rootMargin: '0px 0px -100px 0px' } 
         );
 
         if (metricsBarRef.current) {
@@ -300,24 +380,12 @@ const MetricsBar = () => {
             <div className="container mx-auto px-6 max-w-6xl">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {metrics.map((metric, index) => (
-                        <div key={index} 
-                            className={`
-                                bg-gray-50 p-8 rounded-2xl border-2 border-gray-200 
-                                shadow-xl shadow-gray-200/50 
-                                flex flex-col items-center text-center 
-                                transition duration-500 hover:scale-[1.05] hover:border-pink-300
-                                ${isVisible ? 'card-animated' : ''}
-                            `} 
-                            style={{ animationDelay: isVisible ? `${index * 0.15}s` : '0s' }
-                        }
-                        >
-                            <div className={`p-4 rounded-full mb-4 bg-gray-200 ${metric.color} metrics-icon-pulse`}> 
-                                <metric.icon className="w-8 h-8" />
-                            </div>
-                            <h3 className={`text-5xl font-extrabold mb-1 text-gray-900 ${isVisible ? 'text-animated' : ''}`}>{metric.count}</h3> 
-                            <p className={`text-md font-medium text-gray-600 mt-2 ${isVisible ? 'summary-animated' : ''}`} style={{ animationDelay: isVisible ? `${index * 0.15 + 0.2}s` : '0s' }}>{metric.label}</p>
-                            <div className={`w-1/3 h-1 mt-4 rounded-full ${metric.lineColor} ${isVisible ? 'animate-line-flow' : ''}`} style={{ animationDelay: isVisible ? `${index * 0.15 + 0.5}s` : '0s' }}></div>
-                        </div>
+                        <MetricCard 
+                            key={index} 
+                            metric={metric} 
+                            index={index} 
+                            isVisible={isVisible} 
+                        />
                     ))}
                 </div>
             </div>
@@ -330,6 +398,17 @@ const MetricsBar = () => {
 const App = () => {
     const [activeSection, setActiveSection] = useState('home');
     const sectionRefs = useRef({});
+
+    // Set a CSS variable for the viewport height to fix iOS/Android address bar issues
+    useEffect(() => {
+        const setVh = () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+        setVh();
+        window.addEventListener('resize', setVh);
+        return () => window.removeEventListener('resize', setVh);
+    }, []);
 
     useEffect(() => {
         const observerOptions = { root: null, rootMargin: '0px', threshold: 0.3 };
@@ -362,10 +441,7 @@ const App = () => {
                     scrollToSection={scrollToSection} 
                 />
 
-                {/* 🛑 FLOATING SECTIONS WRAPPER 🛑 
-                    - This div contains all content after the hero.
-                    - It scrolls up over the hero section.
-                */}
+                {/* FLOATING SECTIONS WRAPPER */}
                 <div 
                     className="
                         relative bg-white z-20 shadow-2xl 
@@ -436,26 +512,46 @@ const App = () => {
 
             </main>
             
-            {/* Global Styles (kept here for animation definitions) */}
+            {/* Global Styles (with GPU acceleration fixes) */}
             <style jsx="true">{`
-            @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            
+            /* FIX: FOR MOBILE 100VH ISSUE */
+            .vh-fix {
+                height: 100vh; /* Default fallback */
+                height: calc(var(--vh, 1vh) * 100); /* Use custom variable for consistent viewport height */
+            }
+
+            /* FIX: Force GPU Acceleration for smooth mobile animations */
+            .card-animated, 
+            .header-animated, 
+            .summary-animated,
+            .text-animated,
+            .menu-item-animated,
+            .animate-line-flow,
+            .btn-pulse-hover {
+                transform: translateZ(0); /* GPU acceleration applied */
+                will-change: transform, opacity; /* Performance hint */
+            }
+
+            /* FIX: Updated keyframe to include translateZ(0) for GPU acceleration */
+            @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px) translateZ(0); } to { opacity: 1; transform: translateY(0) translateZ(0); } }
             .card-animated { opacity: 0; animation: fade-in-up 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
             
-            @keyframes pulse-icon { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.95; } }
+            @keyframes pulse-icon { 0%, 100% { transform: scale(1) translateZ(0); opacity: 1; } 50% { transform: scale(1.05) translateZ(0); opacity: 0.95; } }
             .icon-pulse { animation: pulse-icon 2s ease-in-out infinite alternate; }
             
-            @keyframes text-fade-in { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+            @keyframes text-fade-in { from { opacity: 0; transform: scale(0.98) translateZ(0); } to { opacity: 1; transform: scale(1) translateZ(0); } }
             .text-animated { animation: text-fade-in 0.5s ease-out forwards; }
             
-            @keyframes appear-from-bottom { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes appear-from-bottom { from { opacity: 0; transform: translateY(10px) translateZ(0); } to { opacity: 1; transform: translateY(0) translateZ(0); } }
             .summary-animated { opacity: 0; animation: appear-from-bottom 1s ease-out forwards; }
             
-            @keyframes header-scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+            @keyframes header-scale-in { from { opacity: 0; transform: scale(0.95) translateZ(0); } to { opacity: 1; transform: scale(1) translateZ(0); } }
             .header-animated { opacity: 0; animation: header-scale-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 
             @keyframes header-fade-lift {
-                from { opacity: 0; transform: translateY(-20px); }
-                to { opacity: 1; transform: translateY(0); }
+                from { opacity: 0; transform: translateY(-20px) translateZ(0); }
+                to { opacity: 1; transform: translateY(0) translateZ(0); }
             }
             .header-fade-lift-animated {
                 animation: header-fade-lift 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -463,18 +559,18 @@ const App = () => {
             }
 
             @keyframes button-pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.02); }
-                100% { transform: scale(1); }
+                0% { transform: scale(1) translateZ(0); }
+                50% { transform: scale(1.02) translateZ(0); }
+                100% { transform: scale(1) translateZ(0); }
             }
             .btn-pulse-hover:hover {
                 animation: none; 
-                transform: scale(1.03); 
+                transform: scale(1.03) translateZ(0); 
             }
 
             @keyframes menu-item-fade-in {
-                from { opacity: 0; transform: translateX(20px); }
-                to { opacity: 1; transform: translateX(0); }
+                from { opacity: 0; transform: translateX(20px) translateZ(0); }
+                to { opacity: 1; transform: translateX(0) translateZ(0); }
             }
             .menu-item-animated {
                 opacity: 0;
@@ -482,9 +578,9 @@ const App = () => {
             }
 
             @keyframes metrics-icon-pulse {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.03); }
-                100% { transform: scale(1); }
+                0%, 100% { transform: scale(1) translateZ(0); }
+                50% { transform: scale(1.03) translateZ(0); }
+                100% { transform: scale(1) translateZ(0); }
             }
             .metrics-icon-pulse {
                 animation: metrics-icon-pulse 2s ease-in-out infinite alternate;
@@ -497,9 +593,9 @@ const App = () => {
             }
             
             @keyframes line-flow {
-                0% { transform: scaleX(0.8); opacity: 0.8; }
-                50% { transform: scaleX(1.1); opacity: 1; }
-                100% { transform: scaleX(0.8); opacity: 0.8; }
+                0% { transform: scaleX(0.8) translateZ(0); opacity: 0.8; }
+                50% { transform: scaleX(1.1) translateZ(0); opacity: 1; }
+                100% { transform: scaleX(0.8) translateZ(0); opacity: 0.8; }
             }
             .animate-line-flow {
                 animation: line-flow 3s ease-in-out infinite alternate;
